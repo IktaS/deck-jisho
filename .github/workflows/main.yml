@@ -34,10 +34,6 @@ jobs:
       - name: updatefrontendlib
         run: ~/.local/share/pnpm/pnpm update @decky/ui --latest
 
-      # == Settings Check ==
-      - name: settingscheck
-        run: .vscode/config.sh
-
       # == Build ==
       - name: cli-build
         run: .vscode/build.sh
