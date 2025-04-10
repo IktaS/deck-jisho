@@ -1,0 +1,53 @@
+name: Setup, Build, and Prerelease
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  setup-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Make scripts executable
+        run: |
+          chmod +x .vscode/setup.sh
+          chmod +x .vscode/config.sh
+          chmod +x .vscode/build.sh
+
+      # == Setup ==
+      - name: depsetup
+        run: .vscode/setup.sh
+
+      - name: Install pnpm and dependencies
+        run: |
+          curl -fsSL https://get.pnpm.io/install.sh | sh -
+          echo "$HOME/.local/share/pnpm" >> $GITHUB_PATH
+          pnpm i
+
+      - name: updatefrontendlib
+        run: pnpm update @decky/ui --latest
+
+      # == Settings Check ==
+      - name: settingscheck
+        run: .vscode/config.sh
+
+      # == Build ==
+      - name: cli-build
+        run: .vscode/build.sh
+
+      # == Create GitHub Prerelease ==
+      - name: Upload release asset (Decky Jisho.zip)
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: prerelease-${{ github.run_number }}
+          name: "Decky Jisho Prerelease ${{ github.run_number }}"
+          prerelease: true
+          files: ./out/Decky\ Jisho.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
