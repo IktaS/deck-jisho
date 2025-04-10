@@ -28,12 +28,11 @@ jobs:
         run: |
           export SHELL="/bin/bash"
           curl -fsSL https://get.pnpm.io/install.sh | sh -
-          export PNPM_HOME="$HOME/.local/share/pnpm"
-          export PATH="$PNPM_HOME:$PATH"
-          pnpm i
+          echo "$HOME/.local/share/pnpm" >> $GITHUB_PATH
+          ~/.local/share/pnpm/pnpm i
 
       - name: updatefrontendlib
-        run: pnpm update @decky/ui --latest
+        run: ~/.local/share/pnpm/pnpm update @decky/ui --latest
 
       # == Settings Check ==
       - name: settingscheck
