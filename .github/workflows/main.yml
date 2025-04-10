@@ -1,11 +1,11 @@
 name: Setup, Build, and Prerelease
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
 jobs:
   setup-and-build:
     runs-on: ubuntu-latest
