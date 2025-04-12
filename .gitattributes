@@ -1,3 +1,4 @@
 py_modules/*.dic filter=lfs diff=lfs merge=lfs -text
 py_modules/*.dylib filter=lfs diff=lfs merge=lfs -text
 py_modules/*.bin filter=lfs diff=lfs merge=lfs -text
+py_modules/** filter=lfs diff=lfs merge=lfs -text
