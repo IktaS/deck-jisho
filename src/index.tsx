@@ -28,6 +28,8 @@ const add = callable<[first: number, second: number], number>("add");
 // It starts a (python) timer which eventually emits the event 'timer_event'
 const startTimer = callable<[], void>("start_timer");
 
+const scanLatest = callable<[app_id: number, url: number], string>("scan_latest_screenshot");
+
 function Content() {
   const [result, setResult] = useState<number | undefined>();
 
@@ -83,6 +85,19 @@ export default definePlugin(() => {
   //   exact: true,
   // });
 
+  let screenshot_register = window.SteamClient.GameSessions.RegisterForScreenshotNotification(async (data: any) => {
+    console.log(data);
+    let res = await scanLatest(data.unAppID, data.details.strUrl);
+    if (res.length <= 0) {
+      await toaster.toast({
+        title: "deck-jisho",
+        body: "Failed ocr",
+        duration: 1000,
+        critical: true
+      })
+    }
+  })
+
   // Add an event listener to the "timer_event" event from the backend
   const listener = addEventListener<[
     test1: string,
@@ -109,6 +124,7 @@ export default definePlugin(() => {
     onDismount() {
       console.log("Unloading")
       removeEventListener("timer_event", listener);
+      screenshot_register.unregister();
       // serverApi.routerHook.removeRoute("/decky-plugin-test");
     },
   };

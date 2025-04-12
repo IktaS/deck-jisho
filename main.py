@@ -5,11 +5,32 @@ import os
 # and add the `decky-loader/plugin/imports` path to `python.analysis.extraPaths` in `.vscode/settings.json`
 import decky
 import asyncio
+from manga_ocr import MangaOcr
+from pathlib import Path
 
 class Plugin:
     # A normal method. It can be called from the TypeScript side using @decky/api.
     async def add(self, left: int, right: int) -> int:
         return left + right
+    
+    # Scan Latest Screenshot and log the mangaocr result
+    async def scan_latest_screenshot(self, app_id=0, url="") -> str:
+        try:
+            decky.logger.info(f"Scanning latest screenshot screenshot: {app_id}, {url}")
+            path = Path.home() / ".local/share/Steam/userdata"
+            fname = url.split("/")[-1]
+            glob_pattern = f"**/760/remote/{app_id}/screenshots/{fname}"
+            decky.logger.info(glob_pattern)
+            files = list(path.glob(glob_pattern))
+            decky.logger.info(str(files))
+            for f in files:
+                mocr = MangaOcr()
+                text = mocr(f)
+                decky.logger.info(f"got text {text}")
+                return text
+        except Exception:
+            decky.logger.exception(f"Copy screenshot: {app_id}, {url}")
+            return ""
 
     async def long_running(self):
         await asyncio.sleep(15)
